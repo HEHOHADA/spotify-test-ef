@@ -1,0 +1,14 @@
+{
+  "semi": false,
+  "trailingComma": "all",
+  "singleQuote": true,
+  "printWidth": 80,
+  "endOfLine": "auto",
+  "tabWidth": 2,
+  "jsxSingleQuote": true,
+  "jsxBracketSameLine": true,
+  "bracketSpacing": true,
+  "arrowParens": "always",
+  "importOrder": ["^pages/","^ui/","^lib/","^[./]"],
+  "importOrderSeparation": true
+}
