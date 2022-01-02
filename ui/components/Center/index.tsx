@@ -1,16 +1,16 @@
 import { ChevronDownIcon } from '@heroicons/react/outline'
-import { playlistAtom, playlistIdState } from 'atoms/playlistAtom'
-import { signOut, useSession } from 'next-auth/react'
+import { useStore } from 'effector-react'
+import { signOut } from 'next-auth/react'
 import type { FC } from 'react'
-import { useEffect, useState } from 'react'
-import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { shuffle } from 'ui/helpers/array/shuffle'
-import { useSpotify } from 'ui/hooks/useSpotify'
+import { $color, $playlist } from 'models/playlist'
+import { $user } from 'models/user/model'
 
 import { Songs } from '../Songs'
 
-const colors = [
+export type CenterProps = {}
+
+export const colors = [
   'from-indigo-500',
   'from-blue-500',
   'from-green-500',
@@ -19,38 +19,12 @@ const colors = [
   'from-purple-500',
 ]
 
-export type CenterProps = {}
-
 export const Center: FC<CenterProps> = (props) => {
   const {} = props
-  const { data: session } = useSession()
-  const playlistId = useRecoilValue(playlistIdState)
-  const spotifyApi = useSpotify()
-  const [playlist, setPlaylist] = useRecoilState(playlistAtom)
+  const user = useStore($user)
+  const playlist = useStore($playlist)
 
-  const [color, setColor] = useState<string | null>(null)
-
-  console.log({ playlist })
-  useEffect(() => {
-    const randomColor = shuffle(colors).pop()
-
-    if (randomColor) {
-      setColor(randomColor)
-    }
-  }, [playlistId])
-
-  useEffect(() => {
-    if (spotifyApi.getAccessToken()) {
-      spotifyApi
-        .getPlaylist(playlistId)
-        .then((data) => {
-          setPlaylist(data.body)
-        })
-        .catch((e) => {
-          console.log('gere', e)
-        })
-    }
-  }, [playlistId, setPlaylist, spotifyApi])
+  const color = useStore($color)
 
   return (
     <div className='flex-grow h-screen overflow-y-scroll scrollbar-hide'>
@@ -60,14 +34,14 @@ export const Center: FC<CenterProps> = (props) => {
           className='flex items-center bg-black
         space-x-3 opacity-90 hover:opacity-80
          cursor-pointer rounded-full p-1 pr-2 text-white'>
-          {session?.user?.image && (
+          {user?.image && (
             <img
               className='rounded-full w-10 h-10'
-              src={session.user.image}
-              alt={session?.user?.name || ''}
+              src={user.image}
+              alt={user?.name || ''}
             />
           )}
-          <h2>{session?.user?.name}</h2>
+          <h2>{user?.name}</h2>
           <ChevronDownIcon className='h-5 w-5' />
         </div>
       </header>

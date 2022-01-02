@@ -9,6 +9,13 @@
   "jsxBracketSameLine": true,
   "bracketSpacing": true,
   "arrowParens": "always",
-  "importOrder": ["^pages/","^ui/","^lib/","^[./]"],
+  "importOrder": [
+    "^pages/",
+    "^ui/",
+    "^lib/",
+    "^models/",
+    "^helpers/",
+    "^[./]"
+  ],
   "importOrderSeparation": true
 }

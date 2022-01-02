@@ -7,31 +7,18 @@ import {
   RssIcon,
   SearchIcon,
 } from '@heroicons/react/outline'
-import { playlistIdState } from 'atoms/playlistAtom'
+import { useEvent, useStore } from 'effector-react'
 import type { FC } from 'react'
-import { useEffect, useState } from 'react'
-import { useRecoilState } from 'recoil'
 
-import { useSpotify } from 'ui/hooks/useSpotify'
-
-import PlaylistObjectSimplified = SpotifyApi.PlaylistObjectSimplified
+import { setPlayListId } from 'models/playlist'
+import { $playlists } from 'models/playlists/model'
 
 export type SidebarProps = {}
 
 export const Sidebar: FC<SidebarProps> = (props) => {
   const {} = props
-  const spotifyApi = useSpotify()
-  const [playlists, setPlaylists] = useState<PlaylistObjectSimplified[]>([])
-  const [playlistId, setPlaylistId] = useRecoilState(playlistIdState)
-
-  useEffect(() => {
-    if (spotifyApi.getAccessToken()) {
-      spotifyApi
-        .getUserPlaylists()
-        .then((resData) => setPlaylists(resData.body.items))
-    }
-  }, [spotifyApi])
-  console.log(playlists, playlistId)
+  const playlists = useStore($playlists)
+  const setPlaylist = useEvent(setPlayListId)
 
   return (
     <div
@@ -73,7 +60,7 @@ export const Sidebar: FC<SidebarProps> = (props) => {
           <p
             className='cursor-pointer hover:text-white'
             key={p.id}
-            onClick={() => setPlaylistId(p.id)}>
+            onClick={() => setPlaylist(p.id)}>
             {p.name}
           </p>
         ))}

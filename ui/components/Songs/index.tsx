@@ -1,6 +1,7 @@
-import { playlistAtom } from 'atoms/playlistAtom'
+import { useList } from 'effector-react'
 import { FC } from 'react'
-import { useRecoilValue } from 'recoil'
+
+import { $playlistTracks } from 'models/playlist'
 
 import { Song } from '../Song'
 
@@ -8,13 +9,7 @@ export type SongsProps = {}
 
 export const Songs: FC<SongsProps> = (props) => {
   const {} = props
-  const playlist = useRecoilValue(playlistAtom)
+  const tracks = useList($playlistTracks, (item) => <Song track={item.track} />)
 
-  return (
-    <div className='text-white'>
-      {playlist?.tracks.items.map((track, i) => (
-        <Song key={track.track.id} track={track.track} />
-      ))}
-    </div>
-  )
+  return <div className='text-white'>{tracks}</div>
 }

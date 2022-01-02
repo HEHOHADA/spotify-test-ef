@@ -1,11 +1,19 @@
+import { spotifyApi, SpotifyGate } from 'api/spotifyApi'
+import { allSettled, fork, serialize } from 'effector'
+import { useGate } from 'effector-react'
 import { GetServerSidePropsContext } from 'next'
-import { getSession } from 'next-auth/react'
 
-import { Center } from 'ui/components/Center'
-import { Player } from 'ui/components/Player'
 import { Sidebar } from 'ui/components/Sidebar'
 
+import { getPlaylistsFx } from 'models/playlists/model'
+import { getSessionFx } from 'models/session/model'
+
+import { Center } from '../ui/components/Center'
+import { Player } from '../ui/components/Player'
+
 export default function Home() {
+  useGate(SpotifyGate)
+
   return (
     <div className='bg-black h-screen overflow-hidden'>
       <main className='flex'>
@@ -20,11 +28,19 @@ export default function Home() {
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getSession(context)
+  const scope = fork()
+
+  const data = await allSettled(getSessionFx, { scope, params: context })
+
+  spotifyApi.setAccessToken(
+    data.status === 'done' ? data.value?.user?.accessToken || '' : '',
+  )
+
+  await allSettled(getPlaylistsFx, { scope })
 
   return {
     props: {
-      session,
+      initialState: serialize(scope),
     },
   }
 }

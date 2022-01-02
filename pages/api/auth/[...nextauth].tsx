@@ -1,8 +1,7 @@
+import { spotifyApi } from 'api/spotifyApi'
 import NextAuth from 'next-auth'
 import { JWT } from 'next-auth/jwt'
 import Spotify from 'next-auth/providers/spotify'
-
-import { spotifyApi } from 'ui/hooks/useSpotify'
 
 import { loginUrl } from 'lib/spotify'
 

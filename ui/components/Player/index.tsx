@@ -1,77 +1,31 @@
 import {
-  RewindIcon,
   FastForwardIcon,
   PauseIcon,
   PlayIcon,
   ReplyIcon,
+  RewindIcon,
   SwitchHorizontalIcon,
   VolumeUpIcon,
 } from '@heroicons/react/solid'
-import { currentTrackIdState, isPlayingState } from 'atoms/songAtom'
-import { useSession } from 'next-auth/react'
+import { useEvent, useStore } from 'effector-react/ssr'
 import type { FC } from 'react'
-import { useCallback, useEffect, useState } from 'react'
-import { useRecoilState } from 'recoil'
 
-import { useSongInfo } from 'ui/hooks/useSongInfo'
-import { useSpotify } from 'ui/hooks/useSpotify'
-
-import { debounce } from '../../helpers/function/debounce'
+import { $isPlaying } from 'models/currentTrackId'
+import { $volume, pauseSong, setVolume } from 'models/player/model'
+import { $songInfo } from 'models/songInfo/model'
 
 export type PlayerProps = {}
 
 export const Player: FC<PlayerProps> = (props) => {
   const {} = props
-  const { data } = useSession()
-  const spotifyApi = useSpotify()
-  const [currentTrackId, setCurrentTrackId] =
-    useRecoilState(currentTrackIdState)
-  const [isPlaying, setIsPlaying] = useRecoilState(isPlayingState)
-  const [volume, setVolume] = useState<number>(50)
+  const isPlaying = useStore($isPlaying)
+  const volume = useStore($volume)
+  const handlePlayPause = useEvent(pauseSong)
+  const changeVolume = useEvent(setVolume)
 
-  const songInfo = useSongInfo()
-  const fetchCurrentSong = useCallback(() => {
-    if (!songInfo) {
-      spotifyApi.getMyCurrentPlayingTrack().then((res) => {
-        res.body?.item?.id && setCurrentTrackId(res.body.item.id)
-        res.body?.is_playing && setIsPlaying(res.body.is_playing)
-      })
-    }
-  }, [setCurrentTrackId, setIsPlaying, songInfo, spotifyApi])
-
-  useEffect(() => {
-    if (spotifyApi.getAccessToken() && !currentTrackId) {
-      fetchCurrentSong()
-    }
-  }, [currentTrackId, spotifyApi, data, fetchCurrentSong])
-
-  const handlePlayPause = () => {
-    spotifyApi.getMyCurrentPlaybackState().then((data) => {
-      if (data.body.is_playing) {
-        spotifyApi.pause()
-        setIsPlaying(false)
-      } else {
-        spotifyApi.play()
-        setIsPlaying(true)
-      }
-    })
-  }
+  const songInfo = useStore($songInfo)
 
   const MainPlayerIcon = isPlaying ? PauseIcon : PlayIcon
-
-  const debouncedAdjustVolume = useCallback(
-    debounce<number>((currentVolume) => {
-      console.log(currentVolume)
-      spotifyApi.setVolume(currentVolume).catch(() => {})
-    }, 500),
-    [],
-  )
-
-  useEffect(() => {
-    if (volume > 0 && volume < 100) {
-      debouncedAdjustVolume(volume)
-    }
-  }, [debouncedAdjustVolume, volume])
 
   return (
     <div
@@ -100,7 +54,7 @@ export const Player: FC<PlayerProps> = (props) => {
       </div>
       <div className='flex items-center space-x-3 md:space-x-4 justify-end pr-5'>
         <VolumeUpIcon
-          onClick={() => volume > 0 && setVolume((prev) => prev - 10)}
+          onClick={() => volume > 0 && changeVolume(volume - 10)}
           className='button'
         />
         <input
@@ -108,10 +62,10 @@ export const Player: FC<PlayerProps> = (props) => {
           min={0}
           max={100}
           value={volume}
-          onChange={(e) => setVolume(+e.target.value)}
+          onChange={(e) => changeVolume(+e.target.value)}
         />
         <VolumeUpIcon
-          onClick={() => volume < 100 && setVolume((prev) => prev + 10)}
+          onClick={() => volume < 100 && changeVolume(volume + 10)}
           className='button'
         />
       </div>

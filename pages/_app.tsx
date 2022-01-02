@@ -1,18 +1,22 @@
-import { SessionProvider } from 'next-auth/react'
+import { hydrate } from 'effector'
+import { Provider } from 'effector-react/ssr'
 import type { AppProps } from 'next/app'
-import { RecoilRoot } from 'recoil'
 import 'styles/globals.css'
 
-const MyApp = ({
-  Component,
-  pageProps: { session, ...pageProps },
-}: AppProps) => {
+import { root } from 'lib/effector'
+import { useScope } from 'lib/useScope'
+
+const MyApp = ({ Component, pageProps }: AppProps) => {
+  const values = useScope(root, pageProps.initialState)
+
+  if (pageProps.initialState) {
+    hydrate(values, { values: pageProps.initialState })
+  }
+
   return (
-    <SessionProvider session={session}>
-      <RecoilRoot>
-        <Component {...pageProps} />
-      </RecoilRoot>
-    </SessionProvider>
+    <Provider value={values}>
+      <Component {...pageProps} />
+    </Provider>
   )
 }
 

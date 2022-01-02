@@ -1,11 +1,10 @@
-import { currentTrackIdState, isPlayingState } from 'atoms/songAtom'
+import { useEvent } from 'effector-react'
+import { TrackObjectFull } from 'globals/spotify'
 import type { FC } from 'react'
-import { useRecoilState } from 'recoil'
 
 import { millisToMinutesAndSeconds } from 'ui/helpers/date/time'
-import { useSpotify } from 'ui/hooks/useSpotify'
 
-import TrackObjectFull = SpotifyApi.TrackObjectFull
+import { playSong } from 'models/currentTrackId'
 
 export type SongProps = {
   track: TrackObjectFull
@@ -13,24 +12,12 @@ export type SongProps = {
 
 export const Song: FC<SongProps> = (props) => {
   const { track } = props
-  const spotifyApi = useSpotify()
-  const [currentTrackId, setCurrentTrackId] =
-    useRecoilState(currentTrackIdState)
-  const [isPlaying, setIsPlaying] = useRecoilState(isPlayingState)
-
-  const playSong = () => {
-    setCurrentTrackId(track.id)
-    setIsPlaying(true)
-
-    spotifyApi.play({
-      uris: [track.uri],
-    })
-  }
+  const play = useEvent(playSong)
 
   return (
     <div
       className='grid grid-cols-2 text-gray-500 py-4 px-5 hover:bg-gray-900'
-      onClick={playSong}>
+      onClick={() => play(track)}>
       <div className='flex items-center space-x-4'>
         <p>{track.track_number + 1}</p>
         <img className='w-10 h-10' src={track.album.images[0].url} alt='' />
