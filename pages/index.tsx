@@ -1,15 +1,13 @@
-import { spotifyApi, SpotifyGate } from 'api/spotifyApi'
 import { allSettled, fork, serialize } from 'effector'
 import { useGate } from 'effector-react'
 import { GetServerSidePropsContext } from 'next'
 
-import { Sidebar } from 'ui/components/Sidebar'
+import { spotifyApi, SpotifyGate } from 'api/spotifyApi'
+
+import { Center, Player, Sidebar } from 'ui/components'
 
 import { getPlaylistsFx } from 'models/playlists/model'
 import { getSessionFx } from 'models/session/model'
-
-import { Center } from '../ui/components/Center'
-import { Player } from '../ui/components/Player'
 
 export default function Home() {
   useGate(SpotifyGate)

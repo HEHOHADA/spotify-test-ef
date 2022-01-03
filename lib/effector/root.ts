@@ -1,9 +1,10 @@
 import { createDomain } from 'effector'
-import { isBrowser } from 'helpers'
+
+import { isBrowser } from '../isBrowser'
 
 export const root = createDomain('root')
 
-if (isBrowser) {
+if (isBrowser()) {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   import('effector-logger/attach').then(({ attachLogger }) => {

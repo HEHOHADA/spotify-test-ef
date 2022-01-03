@@ -1,10 +1,11 @@
 import { useEvent } from 'effector-react'
-import { TrackObjectFull } from 'globals/spotify'
 import type { FC } from 'react'
 
-import { millisToMinutesAndSeconds } from 'ui/helpers/date/time'
+import { millisToMinutesAndSeconds } from 'ui/helpers'
 
 import { playSong } from 'models/currentTrackId'
+
+import { TrackObjectFull } from 'globals/spotify'
 
 export type SongProps = {
   track: TrackObjectFull

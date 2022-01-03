@@ -11,10 +11,12 @@
   "arrowParens": "always",
   "importOrder": [
     "^pages/",
+    "^api/",
     "^ui/",
     "^lib/",
     "^models/",
     "^helpers/",
+    "^globals/",
     "^[./]"
   ],
   "importOrderSeparation": true

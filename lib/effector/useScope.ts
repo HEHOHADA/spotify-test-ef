@@ -1,7 +1,7 @@
 import { Domain, fork, hydrate, Scope } from 'effector'
 import { useMemo } from 'react'
 
-import { isBrowser } from 'helpers/isBrowser'
+import { isBrowser } from 'lib/isBrowser'
 
 let scope: Scope
 
@@ -16,7 +16,7 @@ function initializeScope<T>(domain: Domain, initialState: T) {
     })
   }
 
-  if (!isBrowser) return _scope
+  if (!isBrowser()) return _scope
 
   if (!scope) {
     scope = _scope
