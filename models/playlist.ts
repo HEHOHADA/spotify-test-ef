@@ -1,11 +1,10 @@
 import { getPlaylistByIdFx } from 'api'
 import { createEvent, createStore, forward, sample } from 'effector'
 
+import { colors } from 'ui/components/Center/colors'
 import { shuffle } from 'ui/helpers'
 
 import { SinglePlaylistResponse } from 'globals/spotify'
-
-import { colors } from '../pages/_app'
 
 export const setPlayListId = createEvent<string>()
 
