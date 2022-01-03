@@ -1,10 +1,11 @@
 import { getPlaylistByIdFx } from 'api'
 import { createEvent, createStore, forward, sample } from 'effector'
+
+import { shuffle } from 'ui/helpers'
+
 import { SinglePlaylistResponse } from 'globals/spotify'
 
-import { shuffle } from 'ui/helpers/array/shuffle'
-
-import { colors } from '../ui/components/Center'
+import { colors } from '../pages/_app'
 
 export const setPlayListId = createEvent<string>()
 
@@ -19,7 +20,7 @@ export const $playlistTracks = $playlist.map((p) => p?.tracks.items || [])
 
 $playlist.on(getPlaylistByIdFx.doneData, (_, data) => data)
 
-export const $color = createStore(colors[0])
+export const $color = createStore<string>(colors[0])
 
 forward({
   from: $playlistId,

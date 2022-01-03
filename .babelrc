@@ -3,6 +3,7 @@
   "plugins": [
     ["effector/babel-plugin", {
       "reactSsr": true
-    }]
+    }],
+    "effector-logger/babel-plugin"
   ]
 }
