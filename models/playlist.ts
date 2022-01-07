@@ -13,6 +13,11 @@ export const $playlistId = createStore('0RrrIZP9lmVCaTaWV5d75c').on(
   (_, id) => id,
 )
 
+forward({
+  from: $playlistId,
+  to: getPlaylistByIdFx,
+})
+
 export const $playlist = createStore<SinglePlaylistResponse | null>(null)
 
 export const $playlistTracks = $playlist.map((p) => p?.tracks.items || [])
@@ -21,16 +26,9 @@ $playlist.on(getPlaylistByIdFx.doneData, (_, data) => data)
 
 export const $color = createStore<string>(colors[0])
 
-forward({
-  from: $playlistId,
-  to: getPlaylistByIdFx,
-})
-
 sample({
   source: $color,
   clock: $playlistId,
-  fn: () => {
-    return shuffle(colors).pop() as string
-  },
+  fn: () => shuffle(colors).pop() as string,
   target: $color,
 })

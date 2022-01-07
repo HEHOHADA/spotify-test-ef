@@ -1,12 +1,10 @@
-import { spotifyApi } from 'api/spotifyApi'
 import { createEffect, createStore } from 'effector'
+
+import { spotifyApi } from 'api/spotifyApi'
+
 import { PlaylistObjectSimplified } from 'globals/spotify'
 
-export const getPlaylistsFx = createEffect({
-  async handler() {
-    return spotifyApi.getUserPlaylists()
-  },
-})
+export const getPlaylistsFx = createEffect(() => spotifyApi.getUserPlaylists())
 
 export const $playlists = createStore<PlaylistObjectSimplified[]>([])
 

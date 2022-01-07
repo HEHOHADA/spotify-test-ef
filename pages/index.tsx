@@ -29,12 +29,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const scope = fork()
 
   const data = await allSettled(getSessionFx, { scope, params: context })
+  const token =
+    data.status === 'done' ? data.value?.user?.accessToken || '' : ''
 
-  spotifyApi.setAccessToken(
-    data.status === 'done' ? data.value?.user?.accessToken || '' : '',
-  )
-
-  await allSettled(getPlaylistsFx, { scope })
+  if (token) {
+    spotifyApi.setAccessToken(token)
+    await allSettled(getPlaylistsFx, { scope })
+  }
 
   return {
     props: {

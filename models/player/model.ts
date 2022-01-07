@@ -13,7 +13,7 @@ debounce({
   target: setVolumeFx,
 })
 
-export const pauseSong = createEvent<void>()
+export const pauseSong = createEvent()
 
 forward({
   from: pauseSong,

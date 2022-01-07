@@ -1,5 +1,4 @@
 import { signInFx } from 'api'
-import { spotifyApi, SpotifyGate } from 'api/spotifyApi'
 import {
   attach,
   createEffect,
@@ -11,21 +10,33 @@ import {
 import { Session } from 'next-auth'
 import { getSession } from 'next-auth/react'
 
+import { spotifyApi, SpotifyGate } from 'api/spotifyApi'
+
 import { getPlaylistsFx } from '../playlists'
 
-// export const sessionDomain = createDomain(createDomain'sessionDomain')
+// export const sessionDomain = createDomain('sessionDomain')
 export const onPageLoaded = createEvent()
+
+forward({
+  from: SpotifyGate.open,
+  to: onPageLoaded,
+})
+
+export const $session = createStore<Session | null>(null)
+
+guard({
+  source: $session,
+  clock: onPageLoaded,
+  filter: (data) => !data,
+  target: signInFx,
+})
 
 export const getSessionFx = createEffect<
   Parameters<typeof getSession>[0],
   Session | null
 >()
 
-getSessionFx.use((context) => {
-  return getSession(context)
-})
-
-export const $session = createStore<Session | null>(null)
+getSessionFx.use(getSession)
 
 $session.on(getSessionFx.doneData, (_, data) => data)
 
@@ -41,18 +52,11 @@ export const setTokenFx = attach({
   },
 })
 
-forward({
-  from: SpotifyGate.open,
-  to: onPageLoaded,
-})
-
 guard({
-  source: $session,
-  clock: onPageLoaded,
-  filter: (data) => {
-    return !data
-  },
-  target: signInFx,
+  source: $userToken,
+  clock: [$userToken, onPageLoaded],
+  filter: (token): token is string => !!token,
+  target: setTokenFx,
 })
 
 guard({
@@ -64,11 +68,4 @@ guard({
 forward({
   from: $session,
   to: getPlaylistsFx,
-})
-
-guard({
-  source: $userToken,
-  clock: [$userToken, onPageLoaded],
-  filter: (token): token is string => !!token,
-  target: setTokenFx,
 })
